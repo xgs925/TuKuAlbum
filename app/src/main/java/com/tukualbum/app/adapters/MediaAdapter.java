@@ -231,17 +231,17 @@ public class MediaAdapter extends ThemedAdapter<MediaAdapter.ViewHolder> {
                 actionsListener.onItemSelected(holder.getAdapterPosition());
         });
 
-        holder.layout.setOnLongClickListener(v -> {
-            if (!selecting()) {
-                // If it is the first long press
-                notifySelected(f.toggleSelected());
-                notifyItemChanged(holder.getAdapterPosition());
-            } else {
-                selectAllUpTo(f);
-            }
-
-            return true;
-        });
+//        holder.layout.setOnLongClickListener(v -> {
+//            if (!selecting()) {
+//                // If it is the first long press
+//                notifySelected(f.toggleSelected());
+//                notifyItemChanged(holder.getAdapterPosition());
+//            } else {
+//                selectAllUpTo(f);
+//            }
+//
+//            return true;
+//        });
     }
 
     public void remove(Media media) {

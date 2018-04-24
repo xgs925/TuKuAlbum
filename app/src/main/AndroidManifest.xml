@@ -220,7 +220,8 @@
 
         <activity
             android:theme="@style/AppTheme.NoActionBar"
-            android:name=".activity.MainActivity"></activity>
+            android:screenOrientation="portrait"
+            android:name=".activity.MainActivity" />
     </application>
 
 </manifest>
