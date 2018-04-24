@@ -142,7 +142,6 @@ public class MainActivity extends SharedMediaActivity implements
 
         albumsMode = false;
         navigationDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-
         rvMediaFragment.setListener(this);
         rvMediaFragment.setEditModeListener(this);
         rvMediaFragment.setNothingToShowListener(this);
