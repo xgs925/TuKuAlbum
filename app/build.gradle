@@ -134,6 +134,25 @@ dependencies {
     // TODO check them out
     implementation 'com.turingtechnologies.materialscrollbar:lib:10.0.3'
     implementation 'de.psdev.licensesdialog:licensesdialog:1.8.3'
+
+    compile 'com.google.dagger:dagger:2.14.1'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.14.1'
+    compile 'org.jsoup:jsoup:1.11.1'
+
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:converter-scalars:2.3.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+
+    compile 'org.greenrobot:greendao:3.2.2'
+
+    compile 'com.orhanobut:logger:2.1.1'
+
+    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.34'
+
+    //rxcache
+    compile 'com.github.VictorAlbertos.RxCache:runtime:1.8.3-2.x'
+    // To use Gson
+    compile 'com.github.VictorAlbertos.Jolyglot:gson:0.0.3'
 }
 
 Properties props = new Properties()
