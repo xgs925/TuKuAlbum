@@ -189,7 +189,7 @@ public class MediaAdapter extends ThemedAdapter<MediaAdapter.ViewHolder> {
         Glide.with(holder.imageView.getContext())
                 .load(f.getUri())
                 .apply(options)
-                .thumbnail(0.5f)
+                .thumbnail(0.3f)
                 .into(holder.imageView);
 
         if (f.isVideo()) {

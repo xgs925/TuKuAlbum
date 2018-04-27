@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 
 import com.tukualbum.app.R;
 import com.tukualbum.app.common.BaseActivity;
@@ -16,7 +17,8 @@ import com.tukualbum.app.fragments.AlbumsFragment;
 import butterknife.BindView;
 
 public class MainActivity extends BaseActivity {
-
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
     @BindView(R.id.vp_container)
     ViewPager mViewPager;
     @BindView(R.id.tb_title)
@@ -34,13 +36,11 @@ public class MainActivity extends BaseActivity {
     protected void initView() {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
-
+        mToolbar.inflateMenu(R.menu.menu_black_white_list);
         for (int i = 0; i < mTitles.length; i++) {
             mTabLayout.addTab(mTabLayout.newTab().setText(mTitles[i]));
         }
         mTabLayout.setupWithViewPager(mViewPager);//给TabLayout设置关联ViewPager，如果设置了ViewPager，那么ViewPagerAdapter中的getPageTitle()方法返回的就是Tab上的标题
-
     }
 
 

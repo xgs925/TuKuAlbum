@@ -3,6 +3,7 @@ package com.tukualbum.app.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -32,6 +33,8 @@ import jp.wasabeef.recyclerview.animators.LandingAnimator;
 
 public class AllMediaFragment extends BaseFragment {
     private static final String BUNDLE_ALBUM = "album";
+    @BindView(R.id.srl_refresh)
+    SwipeRefreshLayout mRefreshLayout;
     @BindView(R.id.rv_img)
     RecyclerView mRecyclerView;
     private MediaAdapter mAdapter;
@@ -66,7 +69,16 @@ public class AllMediaFragment extends BaseFragment {
     @Override
     protected void initView() {
         initAdapter();
+        initRefreshLayout();
         initRecyclerView();
+    }
+
+    private void initRefreshLayout() {
+        mRefreshLayout.setOnRefreshListener(() -> {
+            mAlbum = Album.getAllMediaAlbum();
+            display();
+
+        });
     }
 
     private void initAdapter() {
@@ -125,6 +137,9 @@ public class AllMediaFragment extends BaseFragment {
                         throwable -> {
                             Log.wtf("asd", throwable);
                         },
-                        () -> mAlbum.setCount(mAdapter.getItemCount()));
+                        () -> {
+                            mAlbum.setCount(mAdapter.getItemCount());
+                            mRefreshLayout.setRefreshing(false);
+                        });
     }
 }
