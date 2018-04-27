@@ -1,11 +1,13 @@
 package com.tukualbum.app.fragment;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.animation.OvershootInterpolator;
 
 import com.tukualbum.app.R;
+import com.tukualbum.app.activity.AlbumActivity;
 import com.tukualbum.app.adapters.AlbumsAdapter;
 import com.tukualbum.app.common.BaseFragment;
 import com.tukualbum.app.data.HandlingAlbums;
@@ -47,7 +49,9 @@ public class ImageFragment extends BaseFragment {
         mAdapter = new AlbumsAdapter(getContext(), new ActionsListener() {
             @Override
             public void onItemSelected(int position) {
-
+                Intent intent = new Intent(getContext(), AlbumActivity.class);
+                intent.putExtra(AlbumActivity.BUNDLE_ALBUM,mAdapter.get(position));
+                startActivity(intent);
             }
 
             @Override

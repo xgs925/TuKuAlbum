@@ -1,21 +1,24 @@
-package com.tukualbum.app.fragment;
+package com.tukualbum.app.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.tukualbum.app.R;
 import com.tukualbum.app.activities.SingleMediaActivity;
 import com.tukualbum.app.adapters.MediaAdapter;
-import com.tukualbum.app.common.BaseFragment;
+import com.tukualbum.app.common.BaseActivity;
 import com.tukualbum.app.data.Album;
 import com.tukualbum.app.data.filter.MediaFilter;
 import com.tukualbum.app.data.provider.CPHelper;
-import com.tukualbum.app.fragments.RvMediaFragment;
 import com.tukualbum.app.items.ActionsListener;
 import com.tukualbum.app.util.AnimationUtils;
 import com.tukualbum.app.util.Measure;
@@ -26,45 +29,30 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 
-/**
- * Created by gus on 2018/4/19.
- */
-
-public class AllMediaFragment extends BaseFragment {
-    private static final String BUNDLE_ALBUM = "album";
+public class AlbumActivity extends BaseActivity {
+    public static final String BUNDLE_ALBUM = "album";
     @BindView(R.id.rv_img)
     RecyclerView mRecyclerView;
     private MediaAdapter mAdapter;
     private GridSpacingItemDecoration mItemDecoration;
     private Album mAlbum;
-
-    public static AllMediaFragment make(Album album) {
-        AllMediaFragment fragment = new AllMediaFragment();
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(BUNDLE_ALBUM, album);
-        fragment.setArguments(bundle);
-        return fragment;
-    }
+    @BindView(com.tukualbum.app.R.id.toolbar)
+    Toolbar toolbar;
+    private static final String TAG="AlbumActivity";
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState == null) {
-            if (getArguments() != null)
-                mAlbum = getArguments().getParcelable(BUNDLE_ALBUM);
-        } else {
-            mAlbum = savedInstanceState.getParcelable(BUNDLE_ALBUM);
-        }
-        if (mAlbum == null) mAlbum = Album.getAllMediaAlbum();
-    }
-
-    @Override
-    protected int setContentView() {
-        return R.layout.fragment_main;
+        setContentView(R.layout.activity_album);
     }
 
     @Override
     protected void initView() {
+        setSupportActionBar(toolbar);
+        toolbar.bringToFront();
+        toolbar.setNavigationIcon(getToolbarIcon(GoogleMaterial.Icon.gmd_arrow_back));
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        mAlbum=getIntent().getParcelableExtra(BUNDLE_ALBUM);
         initAdapter();
         initRecyclerView();
     }

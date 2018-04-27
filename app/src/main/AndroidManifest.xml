@@ -219,9 +219,13 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity
-            android:theme="@style/AppTheme.NoActionBar"
+            android:name=".activity.MainActivity"
             android:screenOrientation="portrait"
-            android:name=".activity.MainActivity" />
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.AlbumActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
