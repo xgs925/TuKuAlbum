@@ -1,9 +1,8 @@
 package com.tukualbum.app.data.parser;
 
-import android.text.TextUtils;
+import android.content.Context;
 
-import com.google.gson.Gson;
-import com.orhanobut.logger.Logger;
+import com.tukualbum.app.App;
 import com.tukualbum.app.data.parser.apiservice.MeiZiTuServiceApi;
 import com.tukualbum.app.data.parser.apiservice.Mm99ServiceApi;
 import com.tukualbum.app.data.parser.cache.CacheProviders;
@@ -11,30 +10,27 @@ import com.tukualbum.app.data.parser.model.BaseResult;
 import com.tukualbum.app.data.parser.model.MeiZiTu;
 import com.tukualbum.app.data.parser.model.Mm99;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import io.reactivex.Observable;
-import io.reactivex.functions.Function;
 import io.rx_cache2.DynamicKey;
 import io.rx_cache2.DynamicKeyGroup;
 import io.rx_cache2.EvictDynamicKey;
 import io.rx_cache2.EvictDynamicKeyGroup;
-import io.rx_cache2.EvictProvider;
-import io.rx_cache2.Reply;
+import io.rx_cache2.internal.RxCache;
+import io.victoralbertos.jolyglot.GsonSpeaker;
+import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
  * @author flymegoc
  * @date 2018/3/4
  */
 
-@Singleton
 public class AppApiHelper implements ApiHelper {
 
     private static final String TAG = AppApiHelper.class.getSimpleName();
@@ -42,16 +38,54 @@ public class AppApiHelper implements ApiHelper {
 
     private MeiZiTuServiceApi meiZiTuServiceApi;
     private Mm99ServiceApi mm99ServiceApi;
-    private Gson gson;
+    OkHttpClient okHttpClient;
+    private static AppApiHelper instance = new AppApiHelper();
 
-    @Inject
-    public AppApiHelper(CacheProviders cacheProviders,MeiZiTuServiceApi meiZiTuServiceApi, Mm99ServiceApi mm99ServiceApi,  Gson gson) {
-        this.cacheProviders = cacheProviders;
-        this.meiZiTuServiceApi = meiZiTuServiceApi;
-        this.mm99ServiceApi = mm99ServiceApi;
-        this.gson = gson;
+    public static AppApiHelper get() {
+        return instance;
     }
 
+    public AppApiHelper() {
+        meiZiTuServiceApi = getMeiZiTuServiceApi();
+        mm99ServiceApi = getMm99ServiceApi();
+        cacheProviders=providesCacheProviders(App.getInstance());
+    }
+
+    OkHttpClient providesOkHttpClient() {
+        if (okHttpClient != null) return okHttpClient;
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        okHttpClient = builder.build();
+        return okHttpClient;
+    }
+    CacheProviders providesCacheProviders(Context context) {
+        File cacheDir = AppCacheUtils.getRxCacheDir(context);
+        return new RxCache.Builder()
+                .persistence(cacheDir, new GsonSpeaker())
+                .using(CacheProviders.class);
+    }
+    public MeiZiTuServiceApi getMeiZiTuServiceApi() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(providesOkHttpClient())
+                .baseUrl(Api.APP_MEIZITU_DOMAIN)
+                .addConverterFactory(ScalarsConverterFactory.create())//请求的结果转为实体类
+                //适配RxJava2.0,RxJava1.x则为RxJavaCallAdapterFactory.create()
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build();
+        MeiZiTuServiceApi apiService = retrofit.create(MeiZiTuServiceApi.class);
+        return apiService;
+    }
+
+    public Mm99ServiceApi getMm99ServiceApi() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(providesOkHttpClient())
+                .baseUrl(Api.APP_MEIZITU_DOMAIN)
+                .addConverterFactory(ScalarsConverterFactory.create())//请求的结果转为实体类
+                //适配RxJava2.0,RxJava1.x则为RxJavaCallAdapterFactory.create()
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build();
+        Mm99ServiceApi apiService = retrofit.create(Mm99ServiceApi.class);
+        return apiService;
+    }
 
 
     @Override
@@ -79,18 +113,10 @@ public class AppApiHelper implements ApiHelper {
     @Override
     public Observable<List<String>> meiZiTuImageList(int id, boolean pullToRefresh) {
         return cacheProviders.meiZiTu(meiZiTuServiceApi.meiZiTuImageList(id), new DynamicKey(id), new EvictDynamicKey(pullToRefresh))
-                .map(new Function<Reply<String>, String>() {
-                    @Override
-                    public String apply(Reply<String> stringReply) throws Exception {
-                        return stringReply.getData();
-                    }
-                })
-                .map(new Function<String, List<String>>() {
-                    @Override
-                    public List<String> apply(String s) throws Exception {
-                        BaseResult<List<String>> baseResult = ParseMeiZiTu.parsePicturePage(s);
-                        return baseResult.getData();
-                    }
+                .map(stringReply -> stringReply.getData())
+                .map(s -> {
+                    BaseResult<List<String>> baseResult = ParseMeiZiTu.parsePicturePage(s);
+                    return baseResult.getData();
                 });
     }
 
@@ -100,39 +126,21 @@ public class AppApiHelper implements ApiHelper {
         DynamicKeyGroup dynamicKeyGroup = new DynamicKeyGroup(category, page);
         EvictDynamicKeyGroup evictDynamicKeyGroup = new EvictDynamicKeyGroup(cleanCache);
         return cacheProviders.cacheWithLimitTime(mm99ServiceApi.imageList(url), dynamicKeyGroup, evictDynamicKeyGroup)
-                .map(new Function<Reply<String>, String>() {
-                    @Override
-                    public String apply(Reply<String> stringReply) throws Exception {
-                        return stringReply.getData();
-                    }
-                })
-                .map(new Function<String, BaseResult<List<Mm99>>>() {
-                    @Override
-                    public BaseResult<List<Mm99>> apply(String s) throws Exception {
-                        return Parse99Mm.parse99MmList(s, page);
-                    }
-                });
+                .map(stringReply -> stringReply.getData())
+                .map(s -> Parse99Mm.parse99MmList(s, page));
     }
 
     @Override
     public Observable<List<String>> mm99ImageList(int id, final String imageUrl, boolean pullToRefresh) {
         return cacheProviders.cacheWithNoLimitTime(mm99ServiceApi.imageLists("view", id), new DynamicKey(id), new EvictDynamicKey(pullToRefresh))
-                .map(new Function<Reply<String>, String>() {
-                    @Override
-                    public String apply(Reply<String> stringReply) throws Exception {
-                        return stringReply.getData();
+                .map(stringReply -> stringReply.getData())
+                .map(s -> {
+                    String[] tags = s.split(",");
+                    List<String> stringList = new ArrayList<>();
+                    for (int i = 0; i < tags.length; i++) {
+                        stringList.add(imageUrl.replace("small/", "").replace(".jpg", "/" + (i + 1) + "-" + tags[i]) + ".jpg");
                     }
-                })
-                .map(new Function<String, List<String>>() {
-                    @Override
-                    public List<String> apply(String s) throws Exception {
-                        String[] tags = s.split(",");
-                        List<String> stringList = new ArrayList<>();
-                        for (int i = 0; i < tags.length; i++) {
-                            stringList.add(imageUrl.replace("small/", "").replace(".jpg", "/" + (i + 1) + "-" + tags[i]) + ".jpg");
-                        }
-                        return stringList;
-                    }
+                    return stringList;
                 });
     }
 
@@ -141,18 +149,8 @@ public class AppApiHelper implements ApiHelper {
         DynamicKeyGroup dynamicKeyGroup = new DynamicKeyGroup(tag, page);
         EvictDynamicKeyGroup evictDynamicKeyGroup = new EvictDynamicKeyGroup(pullToRefresh);
         return cacheProviders.meiZiTu(stringObservable, dynamicKeyGroup, evictDynamicKeyGroup)
-                .map(new Function<Reply<String>, String>() {
-                    @Override
-                    public String apply(Reply<String> stringReply) throws Exception {
-                        return stringReply.getData();
-                    }
-                })
-                .map(new Function<String, BaseResult<List<MeiZiTu>>>() {
-                    @Override
-                    public BaseResult<List<MeiZiTu>> apply(String s) throws Exception {
-                        return ParseMeiZiTu.parseMeiZiTuList(s, page);
-                    }
-                });
+                .map(stringReply -> stringReply.getData())
+                .map(s -> ParseMeiZiTu.parseMeiZiTuList(s, page));
     }
 
     private String buildUrl(String category, int page) {

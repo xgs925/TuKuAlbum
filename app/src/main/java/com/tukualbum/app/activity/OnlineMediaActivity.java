@@ -19,6 +19,9 @@ import com.tukualbum.app.data.parser.ApiHelper;
 import com.tukualbum.app.data.parser.AppApiHelper;
 import com.tukualbum.app.data.parser.model.BaseResult;
 import com.tukualbum.app.data.parser.model.MeiZiTu;
+import com.tukualbum.app.data.parser.model.Mm99;
+import com.tukualbum.app.data.parser.rxjava.CallBackWrapper;
+import com.tukualbum.app.data.parser.rxjava.RxSchedulersHelper;
 import com.tukualbum.app.data.provider.CPHelper;
 import com.tukualbum.app.items.ActionsListener;
 import com.tukualbum.app.util.AnimationUtils;
@@ -26,6 +29,8 @@ import com.tukualbum.app.util.Measure;
 import com.tukualbum.app.views.GridSpacingItemDecoration;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -35,11 +40,14 @@ import io.reactivex.schedulers.Schedulers;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 
 public class OnlineMediaActivity extends BaseActivity {
-    @BindView(R.id.rv_media) RecyclerView mRecyclerView;
+    @BindView(R.id.rv_media)
+    RecyclerView mRecyclerView;
     private MediaAdapter mAdapter;
     private Album mAlbum;
     private GridSpacingItemDecoration mItemDecoration;
-    private ApiHelper dataManager=new AppApiHelper();
+    AppApiHelper dataManager = AppApiHelper.get();
+    private int page = 1;
+    private Integer totalPage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,6 +79,7 @@ public class OnlineMediaActivity extends BaseActivity {
             }
         });
     }
+
     private void initRecyclerView() {
         mItemDecoration = new GridSpacingItemDecoration(4, Measure.pxToDp(2, getContext()), true);
         mRecyclerView.addItemDecoration(mItemDecoration);
@@ -81,67 +90,65 @@ public class OnlineMediaActivity extends BaseActivity {
                         new LandingAnimator(new OvershootInterpolator(1f))
                 ));
 
-
-        dataManager.listMeiZiTu(tag, page, pullToRefresh)
-                .map(new Function<BaseResult<List<MeiZiTu>>, List<MeiZiTu>>() {
+        dataManager.list99Mm("meitui", page, false)
+                .map(listBaseResult -> listBaseResult.getData())
+                .compose(RxSchedulersHelper.ioMainThread())
+                .subscribe(new CallBackWrapper<List<Mm99>>() {
                     @Override
-                    public List<MeiZiTu> apply(BaseResult<List<MeiZiTu>> baseResult) throws Exception {
-                        if (page == 1) {
-                            totalPage = baseResult.getTotalPage();
-                        }
-                        return baseResult.getData();
+                    public void onSuccess(List<Mm99> mm99s) {
+                        System.out.println(mm99s.size());
                     }
+
+                    @Override
+                    public void onError(String msg, int code) {
+
+                    }
+                });
+        dataManager.listMeiZiTu("index", page, false)
+                .map(baseResult -> {
+                    if (page == 1) {
+                        totalPage = baseResult.getTotalPage();
+                    }
+                    return baseResult.getData();
                 })
-                .compose(RxSchedulersHelper.<List<MeiZiTu>>ioMainThread())
-                .compose(provider.<List<MeiZiTu>>bindUntilEvent(Lifecycle.Event.ON_DESTROY))
+                .compose(RxSchedulersHelper.ioMainThread())
                 .subscribe(new CallBackWrapper<List<MeiZiTu>>() {
 
                     @Override
                     public void onBegin(Disposable d) {
-                        ifViewAttached(new ViewAction<MeiZiTuView>() {
-                            @Override
-                            public void run(@NonNull MeiZiTuView view) {
-                                view.showLoading(pullToRefresh);
-                            }
-                        });
+
                     }
 
                     @Override
                     public void onSuccess(final List<MeiZiTu> meiZiTus) {
-                        ifViewAttached(new ViewAction<MeiZiTuView>() {
-                            @Override
-                            public void run(@NonNull MeiZiTuView view) {
-                                if (page == 1) {
-                                    view.setData(meiZiTus);
-                                    view.showContent();
-                                } else {
-                                    view.setMoreData(meiZiTus);
-                                }
-                                //已经最后一页了
-                                if (page >= totalPage) {
-                                    view.noMoreData();
-                                } else {
-                                    page++;
-                                }
-                            }
-                        });
+                        System.out.println(meiZiTus.size());
+//                        ifViewAttached(new ViewAction<MeiZiTuView>() {
+//                            @Override
+//                            public void run(@NonNull MeiZiTuView view) {
+//                                if (page == 1) {
+//                                    view.setData(meiZiTus);
+//                                    view.showContent();
+//                                } else {
+//                                    view.setMoreData(meiZiTus);
+//                                }
+//                                //已经最后一页了
+//                                if (page >= totalPage) {
+//                                } else {
+//                                    page++;
+//                                }
+//                            }
+//                        });
                     }
 
                     @Override
                     public void onError(final String msg, int code) {
-                        ifViewAttached(new ViewAction<MeiZiTuView>() {
-                            @Override
-                            public void run(@NonNull MeiZiTuView view) {
-                                view.showError(msg);
-                            }
-                        });
+
                     }
                 });
 
 
-
-        mRecyclerView.setAdapter(mAdapter);
-        display();
+//        mRecyclerView.setAdapter(mAdapter);
+//        display();
     }
 
     private void display() {

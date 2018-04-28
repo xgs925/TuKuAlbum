@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import org.horaapps.liz.ColorPalette;
@@ -18,7 +19,22 @@ import java.util.regex.Pattern;
  */
 public class StringUtils {
 
+    /**
+     * \u3000\u3000 首行缩进
+     * 空格：&#160;
+     * &#8194;半个中文字更准确点，
+     * &#8195;一个中文字但用起来会比中文字宽一点点。
+     */
 
+    public static String subString(String str, int startIndex, int endIndex) {
+        if (TextUtils.isEmpty(str) || startIndex < 0 || endIndex < 0 || startIndex >= str.length() || endIndex - startIndex < 0) {
+            return "";
+        }
+        if (endIndex > str.length()) {
+            return str.substring(startIndex, str.length());
+        }
+        return str.substring(startIndex, endIndex);
+    }
     public static String[] asArray(String ... a) {
         return a;
     }

@@ -17,8 +17,6 @@ import io.reactivex.Observable;
 
 public interface ApiHelper {
 
-
-
     Observable<BaseResult<List<MeiZiTu>>> listMeiZiTu(String tag, int page, boolean pullToRefresh);
 
     Observable<List<String>> meiZiTuImageList(int id, boolean pullToRefresh);

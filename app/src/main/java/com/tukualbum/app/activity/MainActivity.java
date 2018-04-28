@@ -12,6 +12,7 @@ import com.tukualbum.app.R;
 import com.tukualbum.app.common.BaseActivity;
 import com.tukualbum.app.fragment.AllMediaFragment;
 import com.tukualbum.app.fragment.ImageFragment;
+import com.tukualbum.app.fragment.OnlineMediaFragment;
 import com.tukualbum.app.fragments.AlbumsFragment;
 
 import butterknife.BindView;
@@ -47,6 +48,7 @@ public class MainActivity extends BaseActivity {
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
         private ImageFragment imageFragment;
         private AllMediaFragment allMediaFragment;
+        private OnlineMediaFragment onlineMediaFragment;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -62,7 +64,8 @@ public class MainActivity extends BaseActivity {
                     if (imageFragment == null) imageFragment = new ImageFragment();
                     return imageFragment;
                 case 2:
-                    break;
+                    if (onlineMediaFragment == null) onlineMediaFragment = new OnlineMediaFragment();
+                    return onlineMediaFragment;
             }
             return null;
         }
@@ -70,7 +73,7 @@ public class MainActivity extends BaseActivity {
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 2;
+            return 3;
         }
 
         @Override
