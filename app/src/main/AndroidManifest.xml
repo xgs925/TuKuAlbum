@@ -155,16 +155,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.DonateActivity"
-            android:label="@string/donate"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.DONATE" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".activities.BlackWhiteListActivity"
             android:label="@string/chose_folders"
@@ -226,7 +217,10 @@
             android:name=".activity.AlbumActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activity.OnlineMediaActivity"></activity>
+        <activity
+            android:name=".activity.OnlineMediaActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

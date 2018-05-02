@@ -508,7 +508,6 @@ public class MainActivity extends SharedMediaActivity implements
                 break;
 
             case NavigationDrawer.NAVIGATION_ITEM_DONATE:
-                DonateActivity.startActivity(this);
                 break;
 
             case NavigationDrawer.NAVIGATION_ITEM_SETTINGS:

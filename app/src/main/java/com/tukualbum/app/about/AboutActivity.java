@@ -21,7 +21,6 @@ import com.tukualbum.app.util.AlertDialogsHelper;
 import com.tukualbum.app.util.ChromeCustomTabs;
 import com.tukualbum.app.util.preferences.Prefs;
 
-import com.tukualbum.app.activities.DonateActivity;
 import com.tukualbum.app.util.ApplicationUtils;
 import org.horaapps.liz.ThemedActivity;
 import org.horaapps.liz.ui.ThemedTextView;
@@ -108,10 +107,6 @@ public class AboutActivity extends ThemedActivity implements ContactListener {
         chromeTabs.launchUrl(GITHUB_LEAFPIC);
     }
 
-    @OnClick(com.tukualbum.app.R.id.about_link_donate)
-    public void onDonate() {
-        DonateActivity.startActivity(this);
-    }
 
     @OnClick(com.tukualbum.app.R.id.about_link_license)
     public void onLicense() {

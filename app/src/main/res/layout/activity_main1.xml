@@ -25,9 +25,8 @@
                 android:id="@+id/tb_title"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:tabGravity="center"
                 android:layout_marginLeft="?attr/actionBarSize"
-                app:tabMode="fixed"
+                app:tabGravity="center"
                 app:tabSelectedTextColor="@color/colorAccent"
                 app:tabTextColor="#ffffff" />
         </android.support.v7.widget.Toolbar>

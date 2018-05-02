@@ -32,8 +32,6 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
  */
 
 public class AppApiHelper implements ApiHelper {
-
-    private static final String TAG = AppApiHelper.class.getSimpleName();
     private CacheProviders cacheProviders;
 
     private MeiZiTuServiceApi meiZiTuServiceApi;

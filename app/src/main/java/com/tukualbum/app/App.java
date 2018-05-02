@@ -7,7 +7,6 @@ import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.Iconics;
 import com.orhanobut.hawk.Hawk;
-import com.squareup.leakcanary.LeakCanary;
 
 import com.tukualbum.app.util.ApplicationUtils;
 import com.tukualbum.app.util.preferences.Prefs;
@@ -26,12 +25,7 @@ public class App extends Application {
 
         ApplicationUtils.init(this);
 
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return;
-        }
-        LeakCanary.install(this);
+
 
         registerFontIcons();
         initialiseStorage();

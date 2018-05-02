@@ -416,4 +416,7 @@ and this could make the media inaccessible from other apps. Use the exclude opti
 
     <string name="toolbar_selection_count" translatable="false">%1$d of %2$d</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

@@ -57,15 +57,15 @@ android {
 
     flavorDimensions "default"
 
-    productFlavors {
-        noGPlay {
-            dimension "default"
-        }
-
-        withGPlay {
-            dimension "default"
-        }
-    }
+//    productFlavors {
+//        noGPlay {
+//            dimension "default"
+//        }
+//
+//        withGPlay {
+//            dimension "default"
+//        }
+//    }
 }
 
 dependencies {
@@ -94,6 +94,7 @@ dependencies {
     // utils
     implementation 'com.github.bumptech.glide:glide:4.3.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support:support-v4:26.1.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.3.1'
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.8'
     implementation 'com.github.Commit451:bypasses:1.1.0'
@@ -127,9 +128,9 @@ dependencies {
 
     // debug Only
     //debugCompile project(':inappstoragereader')
-    implementation 'cat.ereza:customactivityoncrash:2.2.0'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+//    implementation 'cat.ereza:customactivityoncrash:2.2.0'
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+//    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
     // TODO check them out
     implementation 'com.turingtechnologies.materialscrollbar:lib:10.0.3'
